@@ -1,0 +1,13 @@
+# Original books and converted source text are intentionally excluded.
+*.epub
+*.mobi
+*.pdf
+_source_epub_markdown/
+_clean_markdown/
+
+# Local environments and generated caches.
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
