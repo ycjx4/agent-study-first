@@ -164,7 +164,7 @@ Like a 1-on-1 tutor, adapt to THIS user:
 - **Remediation succeeded**: Celebrate briefly in feedback ("The second angle clicked — nice work."). Note in the journal which teaching approach worked.
 - **Remediation failed (second attempt still weak)**: Offer the user a choice:
   > "This concept seems tricky. We can try a third angle, or flag it for later review and move on. Which would you prefer?"
-
+  
   If user chooses to move on, mark the concept as `[!]` in the knowledge tree with a note that it needs revisiting, and include a cross-check in the next document.
 
 ## Rich Progress Tracking
