@@ -1,6 +1,16 @@
 # Remediation Patterns
 
-When a user's core grasp is weak or a specific misconception is blocking future learning, do NOT advance. Re-teach from a fundamentally different angle. This reference provides patterns and examples.
+Before attributing a difficulty to the learner, run reverse alignment from [lesson-design.md](lesson-design.md) and classify its source. This table is the skill's only authoritative gap-source table:
+
+| Gap source | Observable condition | Learner status effect | Teaching action |
+|---|---|---|---|
+| `learner gap` | Coverage is complete and aligned, but the learner cannot explain, transfer, or identify a boundary. | May set `remediating`. | Create `XX-revisit.md` from a different angle and retest the actual misconception. |
+| `instruction gap` | A mastery-bearing method was not taught well enough. | Do not record a learner misconception or lower status from that item. | Create `XX-supplement.md`, teach the missing method, then use an aligned question. |
+| `assessment gap` | The question is out of scope, ambiguous, or cannot distinguish understanding. | No negative learner-state effect. | Retire, rewrite, or relabel it as exploration. |
+
+Use the earliest observable cause: an invalid or mis-scoped question is an `assessment gap`; a valid question that lacks required teaching is an `instruction gap`; only complete, aligned teaching permits a `learner gap`. Exclude instruction- and assessment-gap items from learner-status evidence. If no other valid evidence exists, preserve the prior state or `learning`; never manufacture a misconception.
+
+All remediation patterns below apply **only** to a confirmed `learner gap`. They do not repair instruction or assessment gaps. When a learner gap blocks future learning, re-teach from a fundamentally different angle and retest the actual misconception.
 
 ## The Golden Rule of Remediation
 
@@ -166,18 +176,16 @@ If the user completes a remediation document and STILL shows weak core grasp:
    > "This concept seems to be a sticking point. Can you tell me in your own words what part feels confusing? Sometimes the way I'm explaining doesn't match how you're thinking about it."
 
 3. **Offer a choice:**
-   > "We can try one more angle, or we can flag this and move on. Sometimes concepts click later when you see them in a different context. Which would you prefer?"
+   > "We can try one more angle, or we can postpone this and move to an independent branch. Sometimes concepts click later in a different context. Which would you prefer?"
 
-4. **If user chooses to move on**, mark in `_progress.md`:
-   ```
-   - [!] [Concept] (01.md, 01-revisit.md) — still fuzzy after two attempts. Flagged for cross-check in future documents.
-   ```
-   Then include this concept in the NEXT document's Q2 or Q3 as a cross-check. Sometimes a concept only clicks when seen alongside related ideas.
+4. **Only if the user explicitly chooses postponement**, set the concept to `deferred`, preserve the unresolved evidence and confusion, and schedule a changed-context retest. Do not treat silence or tutor preference as consent.
+
+5. **Check dependencies before moving.** If the concept is a critical prerequisite, do not continue into content that relies on it, even when it is `deferred`. Offer a third angle or an independent branch. A non-blocking deferred concept can be revisited later in a new context.
 
 ## Escaping Remediation Loops
 
 The worst outcome is a user stuck on the same topic for 3+ documents, getting frustrated. Prevention:
 - Remediation documents should be SHORTER than regular documents (~60% of normal length)
 - "A quick check" is ONE question, not three — make it fast
-- If the second remediation also fails, the default should be "move on with flag" not "try again"
+- If the second remediation also fails, ask the learner to choose; there is no automatic move-on or automatic third attempt
 - Never make the user feel like they're failing. The frame is always: "This concept is tricky to explain. Let me try differently."

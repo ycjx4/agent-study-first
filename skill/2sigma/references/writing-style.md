@@ -13,13 +13,17 @@ Write like a knowledgeable friend explaining something over coffee — not a tex
 
 Follow the user's preference from `_user_profile.md`:
 
-| Preference | Target | Behavior |
+Length preferences control reading density, not maximum words. Complete the coverage map first. If the lesson cannot teach and assess a coherent unit at the target, expand or split it; never remove required teaching to hit the target.
+
+| Preference | Starting target | Starting shape |
 |-----------|--------|----------|
-| Short | ~600 words | One core idea, 1-2 examples, 2 questions |
-| Medium | ~1000 words | One core idea with depth, 2-3 examples, 2-3 questions |
-| Long | ~1800 words | One core idea with full context, multiple examples, 3 questions |
+| Short | ~600 words | Concise treatment, 1-2 examples, 2 questions |
+| Medium | ~1000 words | Balanced depth, 2-3 examples, 2-3 questions |
+| Long | ~1800 words | Broader context, multiple examples, 3 questions |
 
 Default to **medium (~1000 words)** if no preference is set.
+
+Apply [Scope and Splitting](lesson-design.md#scope-and-splitting) after completing the coverage map.
 
 ## Universal Analogy Library
 

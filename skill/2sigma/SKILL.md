@@ -1,11 +1,6 @@
 ---
 name: 2sigma
-description: |
-  Interactive mastery-learning tutor based on Bloom's 2-sigma theory. Generates structured markdown documents with adaptive difficulty, comprehension-based progression, and knowledge tree navigation.
-
-  Trigger when user says: "learn X", "I don't understand X", "help me read this paper", "what is X", "how to get started with X", "explain X to me", "help me look at this project/repo", "quiz me on this book", "help me review for exam", or similar expressions in any language.
-
-  Modes: Paper Reading, Concept Learning, Domain Introduction, Tech Stack Learning, Code Repo Reading, Exam Review.
+description: Use when a user wants to learn, understand, review, or be quizzed on a concept, paper, domain, technology, code repository, book, or exam material in any language.
 version: 1.0.0
 allowed-tools:
   - Read
@@ -23,10 +18,12 @@ allowed-tools:
 
 ## Iron Rules
 
-1. **Learning content lives in .md files, but dialogue drives mastery.** Write full explanations into documents. In chat, you MAY ask follow-up questions, probe the user's reasoning, clarify misconceptions, or have a brief Socratic dialogue when their answers show partial understanding. This is NOT optional — if an answer is fuzzy, ask one more question before generating the next document. The chat is your tutoring table; the files are your textbook.
+1. **Learning content lives in .md files, but dialogue drives mastery after alignment.** Write full explanations into documents. After reverse coverage/alignment passes, a fuzzy learner answer requires one targeted follow-up before the next document. If alignment fails, route the `instruction gap` or `assessment gap` before any learner probe. Follow the detailed order in the Mastery Learning Loop.
 2. **No content before storage path is confirmed.** Do not generate any learning material until the user specifies where to save files.
 3. **Respond in the user's language.** Match the language the user is using. If a user profile exists, follow the language preference stored there.
 4. **Mastery before advancement — no exceptions.** If the user's core grasp of the current topic is weak (see [references/grading.md](references/grading.md)), do NOT advance. Generate a remediation document that re-teaches from a different angle. This is the heart of the 2-sigma effect.
+5. **Quality before length.** Treat document length as a reading preference. Complete the lesson-design gate before deciding whether to expand or split.
+6. **Teaching responsibility before learner attribution.** Pass the reverse alignment check in [references/lesson-design.md](references/lesson-design.md) before using a question to change learner status.
 
 ## Startup Flow
 
@@ -47,9 +44,9 @@ If ambiguous, ask the user to clarify.
 
 ### Step 2: Check User Profile
 
-Look for `_user_profile.md` in the course folder or its parent directory.
+Look for `_user_profile.md` in the course folder or its parent directory. For an existing course, apply the targeted startup read in [references/progress-tracking.md](references/progress-tracking.md): profile, short current snapshot, then only log events matching the current and prerequisite concept IDs.
 
-- **Found**: Read preferences silently. Proceed.
+- **Found**: Read preferences silently. Do not default-read the full learning log or any previous lesson. Proceed.
 - **Not found**: Run first-time onboarding. See [references/onboarding.md](references/onboarding.md).
 
 ### Step 3: Confirm Storage Path (Blocking)
@@ -86,7 +83,9 @@ Details: [references/learning-modes.md](references/learning-modes.md)
 
 ### Step 6: Generate Learning Document
 
-Write content to .md file. Notify user in chat with one line:
+Read [references/lesson-design.md](references/lesson-design.md). Build the required coverage map before drafting, write the teaching body and questions with `core`/`transfer`/`exploration` mappings, then complete the reverse alignment check before saving. Expand or split the unit when the preflight gate requires it.
+
+Write the resulting content to a .md file. Notify user in chat with one line:
 
 > Generated `{file_path}`. Please read and answer the questions at the end.
 
@@ -94,9 +93,10 @@ Write content to .md file. Notify user in chat with one line:
 
 ```
 {path}/{topic_name}/
-├── _user_profile.md   # User preferences (first use only)
-├── _progress.md       # Knowledge tree, progress, and learning journal
-├── 00-roadmap.md      # Roadmap (Domain Introduction & Exam Review)
+├── _user_profile.md   # Stable learner context and validated preferences
+├── _progress.md       # Short current-state snapshot
+├── _learning_log.md   # Append-only schema v2 evidence events
+├── 00-roadmap.md      # Roadmap (Domain Introduction, Code Repo Reading & Exam Review)
 ├── 01.md
 ├── 01-revisit.md      # Only if core grasp was weak on 01.md
 ├── 02.md
@@ -114,15 +114,18 @@ Write content to .md file. Notify user in chat with one line:
 
 ## Check Your Understanding
 
+<!-- concept_ids: [id.one] | type: core | evidence: explanation -->
 1. [Accessible — rephrase in your own words, not copy-paste]
 
 (answer here)
 
+<!-- concept_ids: [id.one, id.two] | type: transfer | evidence: application -->
 2. [Application — use the concept in a new scenario]
 
 (answer here)
 
-3. [Challenge (optional) — synthesis or evaluation]
+<!-- concept_ids: [id.two] | type: exploration | evidence: synthesis -->
+3. [Exploration (optional, non-scoring) — synthesis or evaluation]
 
 (answer here)
 
@@ -137,24 +140,26 @@ To explore:
 - [Branch Y]: one-line description
 ```
 
-Questions must follow the cross-difficulty design. See [references/grading.md](references/grading.md).
+Questions must follow the question types, metadata, and alignment contract in [references/lesson-design.md](references/lesson-design.md), plus the cross-difficulty design in [references/grading.md](references/grading.md).
 
 ## Mastery Learning Loop
 
-Before generating document N+1:
+Run this full cycle in order. Do not replace it with holistic document grading:
 
-1. Read document N and the user's answers.
-2. **Evaluate overall comprehension** — holistic understanding, not per-question scoring. See [references/grading.md](references/grading.md) for the full framework.
-3. **Decide with a hard gate:**
-   - **Core grasp solid** → Write concise feedback at the top of the new document. Advance.
-   - **Core grasp fuzzy but boundaries blurry** → Write feedback with clarification. Advance, but flag the fuzzy concept for cross-checking in a future document (within 3 documents).
-   - **Core grasp weak OR specific misconception detected** → Do NOT advance. Generate a **remediation document** that re-teaches the SAME topic from a fundamentally different angle (different analogy, different entry point, different example domain). The remediation document must include new questions targeting the specific misconception. Only advance after the user demonstrates corrected understanding.
-4. **Probe in chat when needed.** If the user's answer is too brief to assess (e.g., one sentence that could mean several things), ask a follow-up in chat before deciding. A single probing question often reveals whether the understanding is solid or superficial. Do NOT skip this when answers are ambiguous.
-5. **Cross-check previous flags.** When generating any new document, check `_progress.md` for concepts previously flagged as fuzzy. Include at least one question that revisits a flagged concept in a new context (spaced retrieval).
+1. **Targeted read.** Read `_user_profile.md`, the short `_progress.md`, and only `_learning_log.md` events matching the current and prerequisite concept IDs. Full-log reads are for audit or migration only. Never default-read previous/history lessons; open only an exact course section named by an evidence reference when the original answer is necessary. Follow [references/progress-tracking.md](references/progress-tracking.md).
+2. **Plan coverage.** Build the required concept coverage map in [references/lesson-design.md](references/lesson-design.md), including any due changed-context retest.
+3. **Teach.** Generate the lesson or gap-specific teaching action with complete execution rules and demonstrations/guided practice wherever a mastery-bearing operation requires them.
+4. **Collect learner evidence.** Collect answers plus `User confidence: high | medium | low | not recorded` and `Most confusing point`. Preserve old unknown confidence as `not recorded`; never infer it.
+5. **Align and diagnose.** Before any learner-directed probe or state judgment, execute the complete O1...On reverse-alignment interface in [references/lesson-design.md](references/lesson-design.md). Exclude `exploration`, instruction-gap, and assessment-gap items from learner attribution. On valid evidence only, evaluate each concept ID under the state and confusion-veto rules in [references/grading.md](references/grading.md), then route the gap source through [references/remediation.md](references/remediation.md). A substantive confusion cannot be overwritten by `[x]`, a document-level grasp label, or favorable overall wording.
+6. **Append the event.** Append one complete evidence event to the `schema_version: 2` `_learning_log.md`, including precise answer reference, concept IDs, coverage, confidence/confusion, gap source, decision, teaching action, outcome, and next review. Keep the schema marker once at the top of the file, and confirm the event append succeeded before continuing.
+7. **Update the snapshot.** Only after the log append succeeds, replace stale current-state facts in `_progress.md`; preserve separate concept states, active confusion, open gaps, next actions, and due reviews. If append fails, do not publish a new snapshot. Update `_user_profile.md` only for repeatedly validated stable patterns.
+8. **Apply the dependency gate.** Advance only when prerequisites for the next content are `solid` or `durable`. A non-blocking `provisional` concept may advance with its changed-context retest due within the next two documents; a weak or `deferred` critical prerequisite blocks dependent content. Use the action labels and feedback formats in [references/grading.md](references/grading.md).
+
+Use at most one chat probe per evaluation cycle when the evidence is ambiguous. After gap triage, create a revisit only for a confirmed `learner gap`; repair teaching with a supplement for an `instruction gap`, or repair/retire the question for an `assessment gap`.
 
 ### Remediation Document Format
 
-When core grasp is weak, generate `XX-revisit.md` instead of advancing:
+For a confirmed `learner gap`, generate `XX-revisit.md` instead of advancing to dependent content:
 
 ```markdown
 # Revisit: [Concept] — A Different Angle
@@ -183,63 +188,15 @@ When core grasp is weak, generate `XX-revisit.md` instead of advancing:
 
 ## Current Progress
 
-[Same format as regular documents. The revisit replaces the failed attempt in the knowledge tree.]
+[After the refreshed answers are evaluated, append the remediation evidence event to `_learning_log.md` and confirm success; then update the current concept row and next action in `_progress.md`. This lesson section may summarize the expected handoff, but it does not replace historical evidence.]
 ```
 
-After the user answers the remediation document, re-evaluate. If core grasp is now solid, advance to the next topic and note the remediation in `_progress.md`. If still weak, offer the user a choice: try a third angle, or flag this topic for later review and move on (preserving the flag for future cross-checks).
+After the user answers the remediation document, repeat the ordered concept evaluation. If the concept is now `solid`, advance according to dependencies. If it remains unstable after multiple interventions, offer a third angle or postponement. Set `deferred` only when the learner explicitly chooses postponement, and never continue into content that depends on a deferred critical prerequisite. Follow [references/remediation.md](references/remediation.md).
 
 
-## Knowledge Tree Navigation
+## Progress Records
 
-Maintain `_progress.md` with this enriched format:
-
-```markdown
-# [Topic] Progress
-
-> Last updated: YYYY-MM-DD HH:MM
-
-## Knowledge Tree
-
-- [x] Basics (01.md)
-  - Grasp: solid | Confidence: high | Last reviewed: 02.md
-- [ ] Branch A: description
-- [~] Branch B: description  ← current
-  - [x] B1 (03.md) — solid, good application
-  - [!] B1-revisit (03-revisit.md) — struggled with [concept], re-taught via [new angle], now solid
-  - [ ] B2
-
-Legend: [x] mastered  [~] in progress  [!] remediated  [ ] to explore
-```
-
-## Learning Journal (per document)
-
-After each document is completed, append a brief learning journal entry:
-
-```markdown
-## Learning Journal
-
-### [Document Title] (file.md) — YYYY-MM-DD
-
-**Grasp level**: [solid / mostly solid with fuzzy edges / needed remediation / still working]
-
-**Key insight gained**: [One sentence — what clicked for the user? What example or analogy resonated?]
-
-**Concepts mastered**:
-- [Concept A]: can explain in own words and apply
-- [Concept B]: can explain but boundary still fuzzy — flag for cross-check
-
-**Misconceptions corrected**:
-- [Misconception]: corrected via [method — feedback / remediation doc / chat dialogue]
-
-**Flagged for review**: [Concepts to revisit in future cross-checks, with target document number]
-```
-
-### Progress Update Rules
-
-- After EVERY document (including remediations): append a journal entry.
-- After remediation: update the knowledge tree node from `[~]` to `[!]` with a note on what changed.
-- After every 3 documents: scan the journal's "Flagged for review" column and include at least one cross-check question in the next document.
-- When a branch completes: write a 2-3 sentence synthesis of what the user learned in that branch, linking concepts together. This serves as spaced retrieval and helps the user see the big picture.
+Use [references/progress-tracking.md](references/progress-tracking.md) as the single authority for `_progress.md`, append-only `_learning_log.md`, and stable `_user_profile.md` templates, targeted reads, and log-before-snapshot ordering. Keep concept states and gap definitions in their existing authoritative references.
 
 
 ## PDF Processing
@@ -256,8 +213,10 @@ For existing markdown files, use `--split-only` to just split by headings.
 
 ## Style & Grading References
 
+- Lesson coverage, question types, reverse alignment, and scope: [references/lesson-design.md](references/lesson-design.md)
 - Writing style, analogies, terminology: [references/writing-style.md](references/writing-style.md)
-- Question design, evaluation, feedback, progress tracking: [references/grading.md](references/grading.md)
+- Question design, evaluation, and feedback: [references/grading.md](references/grading.md)
+- Progress snapshots, evidence logs, profiles, and targeted reads: [references/progress-tracking.md](references/progress-tracking.md)
 - Remediation patterns and misconception types: [references/remediation.md](references/remediation.md)
 - Mode-specific workflows: [references/learning-modes.md](references/learning-modes.md)
 - How to add new learning modes: [references/extending.md](references/extending.md)

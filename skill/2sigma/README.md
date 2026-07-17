@@ -27,7 +27,7 @@
 
 - **Asks YOU questions** instead of waiting for you to ask — because when you're learning something new, you don't know what you don't know
 - **Writes structured learning documents** to your local files — not trapped in a chat window that expires
-- **Tracks your progress** with a knowledge tree — pick up where you left off, anytime
+- **Tracks concept-level evidence** — pick up accurately without confusing a teaching failure with your own learning gap
 - **Adapts to your level** — struggling? it slows down. breezing through? it challenges you
 
 ### Why not just chat with AI?
@@ -38,7 +38,7 @@ Because chatting with AI gets the learning loop **backwards**.
 |---|---|---|
 | Who drives? | You ask, AI answers | **AI tutors, you respond** |
 | Context | Chat dies after long conversations | **Files persist forever** |
-| Progress | None. Start over every session. | **Knowledge tree + mastery tracking** |
+| Progress | None. Start over every session. | **Current snapshot + append-only evidence log** |
 | Difficulty | One-size-fits-all | **Adapts to YOUR comprehension** |
 | Science | None | **Bloom's 2-sigma method** |
 
@@ -56,8 +56,8 @@ Because chatting with AI gets the learning loop **backwards**.
 2. AI asks about your background and level
 3. Generates `01.md` — written like a friend explaining, not a textbook lecturing
 4. You answer questions at the end (designed to test *understanding*, not *memory*)
-5. AI evaluates your overall comprehension, not just right/wrong
-6. Generates `02.md` — adapted based on your answers
+5. AI first checks that each scored question was actually taught, then evaluates evidence by concept
+6. It records the result and generates the next lesson, a targeted supplement, or a revisit as appropriate
 7. Repeat until mastery
 
 ## 6 Learning Modes
@@ -75,31 +75,42 @@ Because chatting with AI gets the learning loop **backwards**.
 | **Code Repo Reading** | Provide a GitHub URL or local path | Reads a codebase like reading a paper — architecture first, details on demand |
 | **Exam Review** | "Quiz me on this book" + PDF/textbook | Progressive testing with weak-area drilling — feed it a whole book |
 
-## The secret sauce
+## Quality-first mastery
 
 Most AI "tutors" ask you to recite what you just read. That's useless.
 
-2sigma designs questions as a **confidence sandwich**:
+2sigma designs questions with an explicit teaching-and-evidence contract:
 
-1. **Accessible** — You can answer this. Builds confidence. But you must rephrase, not copy.
-2. **Application** — Apply the concept to a scenario the document never mentioned.
-3. **Challenge** (optional) — Synthesize, evaluate, or argue. Only when you're ready.
+1. **Core** — directly tests a method the lesson has taught.
+2. **Transfer** — applies the same method in a genuinely changed context.
+3. **Exploration** — optional synthesis beyond the lesson; it never affects mastery.
 
-The AI evaluates your **overall comprehension**, not individual answers. Small mistakes get corrected and you move on. Fundamental misunderstandings trigger a re-teach from a different angle.
+Before a question can affect mastery, the tutor traces every required operation back to an execution rule and a worked example or guided practice. Missing teaching becomes an **instruction gap**; an ambiguous or out-of-scope question becomes an **assessment gap**. Neither is recorded as a learner failure.
 
-### Your Knowledge Tree
+### Concept states, not a single pass/fail
 
-2sigma builds a **knowledge tree** as you learn. You always know exactly where you are:
+Each concept has its own evidence-backed state:
 
-- **Green nodes** = mastered topics (you've proven you understand them)
-- **Coral node** = what you're learning right now
-- **Gray dashed nodes** = upcoming topics (locked until prerequisites are done)
+- `learning` — first teaching cycle; evidence is not sufficient yet
+- `provisional` — directionally right, but transfer, boundaries, expression, or confidence is not stable
+- `solid` — can explain, transfer, and identify a boundary with no substantive unresolved confusion
+- `durable` — remains stable on a delayed, changed-context retest
 
-Pick up where you left off, anytime. Your progress never gets lost.
+Explicit confusion vetoes `solid` and triggers one focused diagnostic question when the evidence is ambiguous.
 
 <p align="center">
   <img src="docs/images/progress-tree.png" alt="Knowledge tree" width="500"/>
 </p>
+
+### Durable, inspectable records
+
+Course files have separate responsibilities:
+
+- `_progress.md` is a short current snapshot: concept states, active confusion, open gaps, due reviews, and the next safe action.
+- `_learning_log.md` is an append-only evidence log with answer references, coverage status, confidence, diagnosis, and review plans.
+- `_user_profile.md` contains only stable preferences and validated teaching patterns.
+
+At a normal restart, the tutor reads the profile, the snapshot, and only log events for the current and prerequisite concepts. It does not default-read prior lessons or the full history.
 
 <a name="install"></a>
 
@@ -169,7 +180,10 @@ Want to add a new learning mode? See [references/extending.md](references/extend
 ├── references/
 │   ├── onboarding.md         ← First-time user setup
 │   ├── learning-modes.md     ← 6 mode specifications
-│   ├── grading.md            ← Question design & evaluation
+│   ├── lesson-design.md      ← Coverage maps, question types & alignment
+│   ├── grading.md            ← Concept states, evidence & advancement
+│   ├── progress-tracking.md  ← Snapshot, append-only log & targeted reads
+│   ├── remediation.md        ← Learner/instruction/assessment gap actions
 │   ├── writing-style.md      ← Tone, analogies, terminology
 │   └── extending.md          ← How to add new modes
 └── scripts/

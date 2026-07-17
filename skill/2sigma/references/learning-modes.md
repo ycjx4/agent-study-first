@@ -1,15 +1,16 @@
 # Learning Modes
 
-## Mastery Gate (All Modes)
+## Shared Quality, Mastery, and Records Contract (All Modes)
 
-Every mode follows the same mastery loop from SKILL.md. After each document:
+Every mode follows the same ordered loop from SKILL.md and the record contract in [progress-tracking.md](progress-tracking.md):
 
-1. Evaluate comprehension using the framework in [grading.md](grading.md).
-2. If core grasp is solid → advance to next document in the sequence.
-3. If core grasp is weak → **pause the normal sequence** and generate a remediation document (see [remediation.md](remediation.md)) before continuing.
-4. A remediation document replaces the next normal document — it does not become an extra burden. The user still answers questions; they just get a different explanation first.
+1. Start with `_user_profile.md`, the short `_progress.md`, and only `_learning_log.md` events targeted by current or prerequisite concept IDs; do not default-read previous/history lessons or the full log.
+2. Before drafting, build the required coverage map in [lesson-design.md](lesson-design.md) for every concept ID, then generate complete teaching and questions mapped by `core`, `transfer`, or `exploration` type and expected evidence.
+3. Collect answers, user confidence, and the most confusing point. Before learner attribution or a probe, run reverse alignment; repair or exclude instruction/assessment gaps.
+4. Make concept-level judgments from aligned evidence using [grading.md](grading.md) and route gap sources through [remediation.md](remediation.md). If a critical prerequisite has a confirmed learner gap, **pause the dependent sequence** and generate a remediation document.
+5. Append the schema v2 evidence event to `_learning_log.md` first. Only after the append succeeds, update the current `_progress.md` snapshot and apply the dependency gate. A remediation document replaces the next dependent normal document rather than becoming an extra burden.
 
-This applies to ALL modes below. The document sequences described are the "happy path." Remediations are inserted whenever the hard gate triggers.
+This applies to ALL modes below. The document sequences are adaptive happy paths; quality gates and remediation determine the actual sequence.
 
 ---
 
@@ -111,7 +112,8 @@ Build a knowledge framework for an entirely new field.
 3. [Concept C] ← requires A and B
 ...
 
-## Estimated Documents: ~X
+## Course Shape
+Adaptive: lesson count follows concept dependencies and complete teaching coverage.
 ```
 
 **01.md — The core question of this field**
@@ -120,10 +122,10 @@ Build a knowledge framework for an entirely new field.
 - Questions: confirm user understands the field's core concern
 
 **02.md+ — Concept by concept, following the roadmap**
-- Each document covers one concept
+- Each document covers one coherent, coverage-complete unit; group inseparable dependent concepts and split at dependency boundaries
 - Follow Mode 2 (Concept Learning) document structure
 - Additionally emphasize connections between concepts
-- After completing a concept, update `_progress.md` and ask which branch to explore next
+- After completing a concept, append its evidence event to `_learning_log.md`; after that append succeeds, update only the current concept row and position in `_progress.md`, then ask which branch in `00-roadmap.md` to explore next
 
 ### Style
 - Like a mentor introducing a newcomer
@@ -171,7 +173,7 @@ Make an unfamiliar codebase understandable. Same approach as reading a paper: co
 
 1. Browse project structure: directory tree, README, entry files, config files
 2. Identify the project's core: what it does, how it's organized, key modules
-3. Build knowledge tree by module/function, write to `_progress.md`
+3. Build the potentially large module/function navigation tree in `00-roadmap.md` (or another course roadmap document). Keep `_progress.md` limited to the current position and the fixed concept-state rows from [progress-tracking.md](progress-tracking.md).
 
 ### Document Sequence
 
@@ -190,7 +192,7 @@ Make an unfamiliar codebase understandable. Same approach as reading a paper: co
 - Questions: describe an operation's execution path through the project
 
 **03.md+ — Module deep dives (branching)**
-- Let user choose which module to explore via `_progress.md`
+- Let the user choose a module from `00-roadmap.md`; record only that selected current position and its fixed concept-state row in `_progress.md`
 - Each document focuses on one module:
   - What it's responsible for
   - Core components and what they do
@@ -236,7 +238,9 @@ Help users consolidate and test their understanding of a book or study material 
 
 ## Review Strategy
 - Chapter-by-chapter tests → Comprehensive test → Weak area drilling
-- Estimated test documents: ~X
+
+## Test Plan Shape
+Adaptive: test document count follows chapter dependencies, complete assessment coverage, and mastery evidence.
 
 ## Choose Your Path
 - [ ] Full sequential review (recommended)

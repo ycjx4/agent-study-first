@@ -55,66 +55,103 @@ Good examples:
 
 ---
 
-## Comprehension Evaluation Framework
+## Concept-Level Comprehension Evaluation
 
-When reading the user's answers, do NOT score per question. Instead, evaluate holistically across these dimensions:
+Evaluate evidence by concept ID, never by a document-level overall impression and never by treating every question as equally valid. First consume each question's coverage status and question type from [lesson-design.md](lesson-design.md). A document can contain several concept states at the same time; no whole-document pass may overwrite concept-level evidence.
 
-### Dimensions
+### Mandatory Reverse-Alignment Gate
 
-| Dimension | What to look for | Weak signal | Strong signal |
-|-----------|-----------------|-------------|---------------|
-| **Core grasp** | Can they explain the main idea in their own words? | Parrots the document's phrasing; uses vague terms like "it's about thinking" | Rephrases with own examples; can state the idea in one sentence without jargon |
-| **Boundary awareness** | Do they know what the concept is NOT? When does it NOT apply? | Cannot identify limits or counterexamples | Can say "this applies when X, but NOT when Y" |
-| **Transfer ability** | Can they apply it to a new context? | Example is just a minor variation of the document's example | Generates a novel scenario from their own life or field |
-| **Connection making** | Do they link it to previously learned concepts? | No reference to earlier topics | Spontaneously connects to concepts from previous documents |
-| **Answer depth** | Is the answer developed enough to assess? | One-sentence answers; no reasoning shown | Explains the "why" behind their answer; shows work |
+Execute the authoritative [lesson-design.md](lesson-design.md) interface before reading a learner answer as evidence. For every procedural or design question, first derive the minimally acceptable answer and enumerate every required decision, step, field, evidence criterion, and comparison as O1...On. Complete this internal trace without aggregating operations:
+
+| Operation | Required performance | Execution-rule citation | Demonstration/guided-practice citation | Coverage result |
+|---|---|---|---|---|
+| O1...On | One row per required operation | Lesson citation or `missing` | Lesson citation or `missing` | `pass` only when both citations exist |
+
+Apply the result mechanically:
+
+1. A goal, principle, or high-level checklist proves only topic presence. It is not execution support, and the question text is not teaching evidence.
+2. Every row passes only when the lesson both tells the learner how to perform or choose that operation **and** demonstrates it inside a complete method or guided practice.
+3. If any mastery-bearing row lacks either form, stop learner grading for the entire question: record `instruction gap`, exclude it from learner state and misconception records, and repair teaching before using an aligned new question.
+4. If the question is out of scope, ambiguous, mismapped, or unable to distinguish understanding, record `assessment gap`, exclude it, and repair or retire the question.
+5. Only a fully passing trace permits learner evaluation or a learner-directed probe.
+
+For example, a four-step list that merely says "record the adjustment" and "compare with real outcomes" is not a demonstration of which fields to record, how to preserve the baseline, or how to perform the comparison. Do not infer that missing method from the learner's answer and then blame or probe the learner for not supplying it.
+
+The authoritative coverage interface remains in [lesson-design.md](lesson-design.md); the authoritative gap definitions and teaching actions remain in [remediation.md](remediation.md).
+
+### Authoritative Concept State Table
+
+This is the only concept-state definition table in the skill.
+
+| State | Exact definition |
+|---|---|
+| `unseen` | The concept has not yet been taught. |
+| `learning` | The concept is in its first teaching cycle and there is not yet enough valid evidence. |
+| `provisional` | The learner is directionally correct, but boundary, transfer, expression, or confidence is not stable. |
+| `remediating` | A learner gap has been confirmed and the concept is being re-taught from a different angle. |
+| `solid` | The learner can currently explain, transfer, and identify a boundary, with no substantive residual confusion. |
+| `durable` | Understanding remains stable on a delayed, changed-context, unprompted retest. |
+| `deferred` | Understanding remains unstable after multiple interventions and the learner explicitly agrees to postpone it. |
+
+Keep a separate state, evidence summary, confusion record, next action, and retest deadline for every concept ID. One lesson may therefore contain `solid`, `provisional`, and `remediating` concepts simultaneously.
+
+### The `solid` Conjunction
+
+A concept is `solid` only when **all** of the following are simultaneously true for that concept ID:
+
+1. Coverage is complete and the mastery-bearing questions are aligned under [lesson-design.md](lesson-design.md).
+2. The learner explains the core mechanism in their own words.
+3. The learner transfers it to a genuinely changed context.
+4. The learner identifies at least one boundary, counterexample, or inapplicable condition.
+5. The evidence is developed enough to rule out guessing, copying, or mere restatement.
+6. No substantive residual confusion is reported, and any low confidence has been diagnosed.
+7. No unresolved `instruction gap` or `assessment gap` remains for the concept.
+
+For conjunct 3, compare the assessment scenario with the lesson's worked examples. Reusing the same roles, facts, or decision problem is rehearsed application, not a genuinely changed context; without other transfer evidence, the highest supported state is `provisional`.
+
+Failure of any conjunct means the concept is not `solid`; evidence for another concept or a favorable impression of the document cannot substitute. `solid` can become `durable` only after a later, changed-context, unprompted retest succeeds. Same-session correction, a prompted answer, or success immediately after re-teaching is not durable evidence.
+
+### Required Learner Inputs
+
+Collect and preserve these two fields in every evaluation cycle:
+
+```markdown
+User confidence: high | medium | low | not recorded
+Most confusing point: [free text | none reported]
+```
+
+Confidence is evidence about stability, not a self-awarded mastery state. High confidence cannot override weak performance. Low confidence triggers one targeted diagnostic and must be resolved or explained before `solid`; it does not automatically prove a learner gap. `not recorded` must remain explicit rather than being invented.
+
+A learner's report of **substantive confusion vetoes `solid`** for the affected concept even when their written answer is broadly correct. Run one targeted diagnostic and use the gap-source contract in [remediation.md](remediation.md):
+
+Self-report alone sets no gap source. An already-collected, reverse-aligned answer independently demonstrates a failure only when its reasoning or observable execution rules out alternative interpretations under the "Too Brief to Assess" rule; a terse field list, omission, or ambiguous label remains multi-interpretable. Without that independent evidence, retain the evidence-supported learner state (never `solid`; use `provisional` when direction is correct but stability is affected), choose `probe`, and use the single targeted diagnostic. Only when independent evidence meets that threshold and gap triage excludes instruction and assessment gaps may you set `remediating` without another probe.
+
+- If the core mechanism is still unclear, stop new content that depends on it. A confirmed learner gap sets `remediating`; an instruction or assessment gap leaves learner state unchanged while the teaching or question is repaired.
+- If the core is correct but boundary, transfer, expression, or confidence is unstable, set `provisional` and schedule a changed-context retest within the next two documents.
+- If the issue is only terminology or phrasing, clarify it and record a low-risk residual issue. This removes the confusion veto only when every `solid` conjunct is otherwise satisfied.
+
+Do not infer the gap source from confidence or confusion alone. Reverse alignment and gap triage happen first.
 
 ### The "Too Brief to Assess" Rule
 
-If any answer is a single sentence with no reasoning (e.g., "样本太小所以不可靠" with no elaboration), do NOT assume you understand their grasp. You must probe in chat:
+After the relevant item has passed reverse alignment, if the learner evidence could still support multiple interpretations, ask at most one targeted probe in chat before selecting a learner state or gap source. A one-sentence answer with no reasoning does not prove understanding or misunderstanding. If the probe remains thin, use coverage and alignment to decide whether the missing evidence is a learner, instruction, or assessment gap; do not default to learner remediation.
 
-> "Can you elaborate on why a small sample makes the conclusion unreliable? Walk me through your reasoning."
+Useful probes include:
 
-One follow-up is usually enough to reveal whether the understanding is solid or superficial. If the follow-up answer is also thin, treat it as **core grasp weak** and generate a remediation document.
+- Too short to evaluate: "Can you walk me through your reasoning step by step?"
+- Correct but possibly memorized: "Can you give a case where this would not hold?"
+- Fuzzy boundary: "What would be an opposite or counterexample case?"
+- Contradictory answers: "How do you reconcile your first answer with this example?"
 
-### Probing Questions — When to Ask in Chat
+### Action and Dependency Gate
 
-Use chat-based probing when:
+- **Clean advance** only when every prerequisite concept for the next content is `solid` or `durable`.
+- **Advance + flag/cross-check** only for a non-blocking `provisional` concept; its retest is due within the next two documents.
+- **Probe** only after alignment passes and one targeted question can distinguish insufficient learner evidence, substantive confusion, or learner-gap status.
+- **Remediate** only for a confirmed `learner gap`; set the affected concept to `remediating` and follow [remediation.md](remediation.md).
+- Set `deferred` only after multiple interventions and explicit learner agreement. A critical prerequisite still blocks dependent content; move only to an independent branch.
 
-| Situation | Example probe |
-|-----------|--------------|
-| Answer is too short to evaluate | "Can you walk me through your reasoning step by step?" |
-| Answer is correct but feels memorized | "Can you think of a scenario where this might NOT hold?" |
-| Answer shows partial grasp but fuzzy boundary | "What would be an example of the OPPOSITE case?" |
-| Answer has a subtle error | "If someone said [opposite view], how would you respond?" |
-| Two answers contradict each other | "In Q1 you said X, but in Q2 your example seems to show Y. Can you help me reconcile?" |
-
-**Rule**: ask at most ONE probing question per evaluation cycle. Don't turn it into an interrogation. One good probe gives more signal than three shallow ones.
-
----
-
-## Hard Gate: Advance vs. Remediate
-
-This is the most important decision in the mastery loop. The default should be "advance with clarification" — remediation is for genuine gaps, not minor imprecisions.
-
-### Decision Table
-
-| Situation | Action | How to execute |
-|-----------|--------|----------------|
-| All dimensions solid | **Advance** | 2-sentence feedback: affirmation + what's next |
-| Core grasp solid, but boundary or transfer fuzzy | **Advance + flag** | Clarify the fuzzy edge in feedback (≤150 words). Flag the concept in `_progress.md` for cross-check within 3 documents. |
-| Core grasp solid on Q1, but Q2/Q3 show significant gap | **Advance + targeted cross-check** | Note the gap in feedback. The next document's Q2 MUST revisit this concept in a new context. Do NOT generate a full remediation. |
-| Core grasp weak (can't explain in own words) | **REMEDIATE** | Generate a revisit document. The new angle must be fundamentally different from the original. |
-| Specific misconception detected that would block future learning | **REMEDIATE** | Generate a revisit document targeting the specific misconception. Name it explicitly (without judgment). |
-| Answer too brief AND probing failed to elicit deeper reasoning | **REMEDIATE** | The remediation should explicitly ask for step-by-step reasoning. |
-
-### The Remediation Litmus Test
-
-Before advancing, ask yourself:
-
-> "If the next topic builds on this concept, will the user be able to follow it?"
-
-If the answer is "no" or "maybe not" → REMEDIATE. If "yes, with a small reminder" → advance + flag. If "definitely yes" → clean advance.
+Instruction and assessment gaps use their own teaching actions and have no negative learner-state effect. Never use a question excluded by reverse alignment to lower status, create a learner misconception, or schedule learner remediation.
 
 ---
 
@@ -160,41 +197,15 @@ Like a 1-on-1 tutor, adapt to THIS user:
 
 - **Breezing through**: Increase depth, add harder Q3s, cover more per document. Consider asking the user if they want to accelerate.
 - **Struggling**: Slow down, more examples, easier Q1, consider splitting the next topic into two documents. Use chat probes more liberally to diagnose where exactly the block is.
-- **Inconsistent** (some topics easy, some hard): Note which concept types are harder for this user. Adjust analogies and examples for those types. This pattern belongs in the Learning Journal.
-- **Remediation succeeded**: Celebrate briefly in feedback ("The second angle clicked — nice work."). Note in the journal which teaching approach worked.
+- **Inconsistent** (some topics easy, some hard): Note the evidence in `_learning_log.md`. Add a preference to `_user_profile.md` only after the pattern is repeatedly validated; adjust analogies and examples accordingly.
+- **Remediation succeeded**: Celebrate briefly in feedback ("The second angle clicked — nice work."). Record the evidence event, and promote the teaching approach to the profile only if repeated cycles validate it.
 - **Remediation failed (second attempt still weak)**: Offer the user a choice:
-  > "This concept seems tricky. We can try a third angle, or flag it for later review and move on. Which would you prefer?"
+  > "This concept seems tricky. We can try a third angle, or postpone it and move to an independent branch. Which would you prefer?"
   
-  If user chooses to move on, mark the concept as `[!]` in the knowledge tree with a note that it needs revisiting, and include a cross-check in the next document.
+  Only if the user explicitly chooses postponement, set the concept to `deferred`, record what remains unstable, and schedule a future retest. If it is a prerequisite, do not advance to dependent content; offer only an independent branch.
 
 ## Rich Progress Tracking
 
-When updating `_progress.md`, go beyond a one-line summary. For each completed document, the Learning Journal entry should capture:
+Use [progress-tracking.md](progress-tracking.md) as the single authority for record roles and templates. Store current concept state, residual confusion, open gaps, due reviews, and next action in the short `_progress.md` snapshot; store chronological assessment and teaching evidence as append-only schema v2 events in `_learning_log.md`; store only stable learner context and repeatedly validated teaching patterns in `_user_profile.md`.
 
-```markdown
-### [Document Title] (file.md) — YYYY-MM-DD
-
-**Grasp level**: [solid / mostly solid with fuzzy edges / needed remediation / still working]
-
-**Key insight gained**: [What clicked? Which analogy or example resonated?]
-
-**Concepts mastered**:
-- [Concept A]: can explain and apply independently
-- [Concept B]: can explain but boundary still fuzzy — flag for cross-check by doc N+3
-
-**Misconceptions corrected**:
-- Had [X] confused with [Y] — clarified via feedback in 02.md
-- Thought [Z] but actually [correct understanding] — remediated in 02-revisit.md
-
-**Flagged for review**: [Concept C] — cross-check in doc 04 or 05
-
-**Teaching approach notes**: [User responds well to: e.g., concrete everyday analogies, step-by-step walkthroughs, comparison tables. Struggles with: e.g., abstract statistical reasoning, probability phrasing.]
-```
-
-This level of detail enables:
-- Spaced retrieval: you know exactly which concepts to cross-check and when
-- Personalized teaching: you know which analogies work for THIS user
-- Progress visibility: the user can see their own learning journey, not just a checklist
-- Handoff resilience: if the user resumes after a long pause, the journal tells you everything you need to know
-
-The journal is for YOU (the tutor) as much as for the user. Write it so that Future You, picking up this session cold, can immediately understand where the user is and what they need next.
+Append the evidence event before publishing the new snapshot. If the append fails, `_progress.md` must remain unchanged. Normal startup reads are profile + short snapshot + concept-ID-targeted events; full-log and historical-course reads are not default context.
